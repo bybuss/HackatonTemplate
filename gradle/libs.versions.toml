@@ -1,6 +1,8 @@
 [versions]
+accompanistPager = "0.24.2-alpha"
+accompanistWebview = "0.36.0"
 activityCompose = "1.9.3"
-agp = "8.5.2"
+agp = "8.7.2"
 apolloNormalizedCacheSqlite = "3.8.2"
 apolloRuntime = "3.8.2"
 coilCompose = "2.4.0"
@@ -40,6 +42,9 @@ uiTestJunit4 = "1.7.5"
 workRuntimeKtx = "2.10.0"
 
 [libraries]
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
+accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "accompanistWebview" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityCompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }

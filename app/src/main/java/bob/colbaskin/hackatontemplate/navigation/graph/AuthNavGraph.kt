@@ -8,6 +8,7 @@ import bob.colbaskin.hackatontemplate.auth.presentation.ForgotScreen
 import bob.colbaskin.hackatontemplate.auth.presentation.LoginScreen
 import bob.colbaskin.hackatontemplate.auth.presentation.SignUpScreen
 import bob.colbaskin.hackatontemplate.navigation.AuthScreen
+import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 
 
 /**
@@ -20,13 +21,21 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         startDestination = AuthScreen.Login.route
     ) {
         composable(route = AuthScreen.Login.route) {
-            LoginScreen(navController = navController)
+            LoginScreen(
+                navController = navController,
+                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) }
+            )
         }
         composable(route = AuthScreen.SignUp.route) {
-            SignUpScreen(navController = navController)
+            SignUpScreen(
+                navController = navController,
+                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) }
+            )
         }
         composable(route = AuthScreen.Forgot.route) {
             ForgotScreen(navController = navController)
         }
     }
+
+    detailsNavGraph(navController)
 }

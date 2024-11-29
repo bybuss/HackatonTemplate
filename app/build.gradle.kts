@@ -34,7 +34,7 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
@@ -42,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
@@ -122,4 +123,11 @@ dependencies {
 
     //Splash Screen
     implementation(libs.androidx.core.splashscreen)
+
+    //Pager
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
+
+    //MapKitSDK
+    implementation(libs.maps.mobile)
 }

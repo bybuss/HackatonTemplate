@@ -3,6 +3,7 @@ package bob.colbaskin.hackatontemplate.auth.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import bob.colbaskin.hackatontemplate.auth.domain.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,9 @@ sealed class AuthState {
 }
 
 @HiltViewModel
-class AuthViewModel @Inject constructor() : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
@@ -31,12 +34,11 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     }
 
     fun checkAuthState() {
-//        if (authRepository.isLoggedIn()) {
-//            _authState.value = AuthState.Authenticated
-//        } else {
-//            _authState.value = AuthState.Unauthenticated
-//        }
-        Log.d("AuthViewModel", "checkAuthState")
+        if (authRepository.isLoggedIn()) {
+            _authState.value = AuthState.Authenticated
+        } else {
+            _authState.value = AuthState.Unauthenticated
+        }
     }
 
     fun login(email: String, password: String) {

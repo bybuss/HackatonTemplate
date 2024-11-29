@@ -19,10 +19,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import bob.colbaskin.hackatontemplate.navigation.AuthScreen
 import bob.colbaskin.hackatontemplate.navigation.graph.Graph
 
@@ -33,7 +35,8 @@ import bob.colbaskin.hackatontemplate.navigation.graph.Graph
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    onWebViewClick: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -65,10 +68,10 @@ fun SignUpScreen(
         CustomTextField(label = "Lastname", value = lastName, onValueChange = { lastName = it })
         Spacer(modifier = Modifier.height(16.dp))
         CustomTextField(label = "Address", value = address, onValueChange = { address = it })
-        Spacer(modifier = Modifier.height(16.dp))
-        CustomTextField(label = "Email", value = email, onValueChange = { email = it })
-        Spacer(modifier = Modifier.height(8.dp))
-        CustomTextField(label = "Password", value = password, onValueChange = { password = it })
+//        Spacer(modifier = Modifier.height(16.dp))
+//        CustomTextField(label = "Email", value = email, onValueChange = { email = it })
+//        Spacer(modifier = Modifier.height(8.dp))
+//        CustomTextField(label = "Password", value = password, onValueChange = { password = it })
         Spacer(modifier = Modifier.height(8.dp))
         Button(
             onClick = {
@@ -82,10 +85,29 @@ fun SignUpScreen(
             Text(text = "Создать аккаунт")
         }
         Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                authViewModel.login(email, password)
+                onWebViewClick()
+            },
+            enabled = authState !is AuthState.Loading
+        ) {
+            Text(text = "WebView")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         TextButton(
             onClick = { navController.navigate(AuthScreen.Login.route) }
         ) {
             Text("У меня уже есть аккаунт")
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SignUpScreenPreview() {
+    SignUpScreen(
+        navController = rememberNavController(),
+        onWebViewClick = { }
+    )
 }

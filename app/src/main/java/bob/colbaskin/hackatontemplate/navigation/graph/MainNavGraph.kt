@@ -1,7 +1,6 @@
 package bob.colbaskin.hackatontemplate.navigation.graph
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,6 +8,7 @@ import bob.colbaskin.hackatontemplate.home.presentation.HomeScreen
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen
 import bob.colbaskin.hackatontemplate.profile.presentation.ProfileScreen
+import bob.colbaskin.hackatontemplate.yandexMap.YandexMapScreen
 
 /**
  * @author bybuss
@@ -24,6 +24,9 @@ fun MainNavGraph(navController: NavHostController) {
             HomeScreen {
                 navController.navigate(DetailsScreen.Home.route)
             }
+        }
+        composable(route = Screen.Map.route) {
+            YandexMapScreen()
         }
         composable(route = Screen.Profile.route) {
             ProfileScreen {

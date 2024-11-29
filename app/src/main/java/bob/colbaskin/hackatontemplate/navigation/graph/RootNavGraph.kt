@@ -3,7 +3,6 @@ package bob.colbaskin.hackatontemplate.navigation.graph
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.*
 import bob.colbaskin.hackatontemplate.AppScreen
-import bob.colbaskin.hackatontemplate.home.presentation.HomeScreen
 
 /**
  * @author bybuss

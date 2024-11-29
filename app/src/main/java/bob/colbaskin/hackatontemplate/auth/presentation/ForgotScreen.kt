@@ -21,9 +21,11 @@ fun ForgotScreen(navController: NavHostController) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Home Screen",
+            text = "Forgot Screen",
             textAlign = TextAlign.Center,
-            modifier = Modifier.clickable { navController.navigate(AuthScreen.Login.route) }
+            modifier = Modifier.clickable {
+                navController.navigate(AuthScreen.Login.route)
+            }
         )
     }
 }
