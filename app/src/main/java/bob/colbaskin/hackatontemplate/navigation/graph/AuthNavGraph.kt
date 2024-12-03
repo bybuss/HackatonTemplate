@@ -17,8 +17,8 @@ import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
-        route = Graph.AUTH,
-        startDestination = AuthScreen.Login.route
+        startDestination = AuthScreen.Login.route,
+        route = Graph.AUTH
     ) {
         composable(route = AuthScreen.Login.route) {
             LoginScreen(

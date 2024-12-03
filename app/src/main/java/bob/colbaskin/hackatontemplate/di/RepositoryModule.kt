@@ -1,6 +1,8 @@
-package bob.colbaskin.hackatontemplate.onBoarding.di
+package bob.colbaskin.hackatontemplate.di
 
 import android.content.Context
+import bob.colbaskin.hackatontemplate.auth.data.AuthRepositoryImpl
+import bob.colbaskin.hackatontemplate.auth.domain.AuthRepository
 import bob.colbaskin.hackatontemplate.onBoarding.data.OnBoardingDataStoreRepositoryImpl
 import bob.colbaskin.hackatontemplate.onBoarding.domain.OnBoardingDataStoreRepository
 import dagger.Module
@@ -12,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object OnBoardingModule {
+object RepositoryModule {
 
     @Provides
     @Singleton
@@ -20,5 +22,11 @@ object OnBoardingModule {
         @ApplicationContext context: Context
     ): OnBoardingDataStoreRepository {
         return OnBoardingDataStoreRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(): AuthRepository {
+        return AuthRepositoryImpl()
     }
 }

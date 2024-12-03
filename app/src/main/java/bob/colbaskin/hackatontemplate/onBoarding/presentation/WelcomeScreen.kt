@@ -1,14 +1,10 @@
 package bob.colbaskin.hackatontemplate.onBoarding.presentation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,10 +22,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen
+import bob.colbaskin.hackatontemplate.navigation.graph.Graph
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 
 @ExperimentalAnimationApi
@@ -67,8 +63,8 @@ fun WelcomeScreen(
                 onClick = {
                     welcomeViewModel.saveOnBoardingState(completed = true)
                     navController.popBackStack()
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(DetailsScreen.Welcome.route) { inclusive = true }
+                    navController.navigate(Graph.MAIN) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(

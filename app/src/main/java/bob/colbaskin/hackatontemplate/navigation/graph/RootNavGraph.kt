@@ -1,22 +1,40 @@
 package bob.colbaskin.hackatontemplate.navigation.graph
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.*
 import bob.colbaskin.hackatontemplate.AppScreen
+import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
+import bob.colbaskin.hackatontemplate.navigation.Screen
+import bob.colbaskin.hackatontemplate.onBoarding.presentation.OnBoardViewModel
+import bob.colbaskin.hackatontemplate.onBoarding.presentation.WelcomeScreen
+import com.google.accompanist.pager.ExperimentalPagerApi
 
 /**
  * @author bybuss
  */
 
+@OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun RootNavGraph() {
     val navController = rememberNavController()
+    val onBoardViewModel: OnBoardViewModel = hiltViewModel()
 
-    NavHost (
+    NavHost(
         navController = navController,
-        startDestination = Graph.AUTH,
+        startDestination = onBoardViewModel.startDestination.value,
         route = Graph.ROOT
     ) {
+        composable(route = Screen.Welcome.route) {
+            WelcomeScreen(navController = navController)
+        }
+
         authNavGraph(navController)
 
         composable(Graph.MAIN) {

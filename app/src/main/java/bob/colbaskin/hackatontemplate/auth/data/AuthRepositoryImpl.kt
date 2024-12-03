@@ -2,7 +2,7 @@ package bob.colbaskin.hackatontemplate.auth.data
 
 import bob.colbaskin.hackatontemplate.auth.domain.AuthRepository
 
-class AuthRepositoryImpl (): AuthRepository {
+class AuthRepositoryImpl: AuthRepository {
 
     override fun isLoggedIn(): Boolean {
         return true

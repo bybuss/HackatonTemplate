@@ -1,4 +1,4 @@
-package bob.colbaskin.hackatontemplate.webViewTest.presentation
+package bob.colbaskin.hackatontemplate.webView.presentation
 
 import android.net.Uri
 import android.webkit.WebResourceRequest
@@ -27,27 +27,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
-import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun WebBrowser(
     onExitClick: () -> Unit,
-    titleText: Int
+    titleText: Int,
+    viewModel: WebBrowserViewModel = hiltViewModel(),
 ) {
-    var url by remember { mutableStateOf("https://www.google.com") }
-    var webViewInstance by remember { mutableStateOf<WebView?>(null) }
-    var isWebViewVisible by remember { mutableStateOf(true) }
-    var canGoBack by remember { mutableStateOf(false) }
-    var canGoForward by remember { mutableStateOf(false) }
+    val url by viewModel.url.collectAsState()
+    val canGoBack by viewModel.canGoBack.collectAsState()
+    val canGoForward by viewModel.canGoForward.collectAsState()
+    val isWebViewVisible by viewModel.isWebViewVisible.collectAsState()
 
     Scaffold(
         topBar = {
@@ -55,17 +53,12 @@ fun WebBrowser(
                 url = url,
                 canGoBack = canGoBack,
                 canGoForward = canGoForward,
-                onUrlChange = { url = it },
-                onBack = {
-                    webViewInstance?.goBack()
-                },
-                onForward = {
-                    webViewInstance?.goForward()
-                },
-                onRefresh = { webViewInstance?.reload() },
+                onUrlChange = { viewModel.setUrl(it) },
+                onBack = { viewModel.onBack() },
+                onForward = { viewModel.onForward() },
+                onRefresh = { viewModel.onRefresh() },
                 onExit = {
-                    webViewInstance?.destroy()
-                    isWebViewVisible = false
+                    viewModel.onExit()
                     onExitClick()
                 },
                 titleText = titleText,
@@ -76,12 +69,10 @@ fun WebBrowser(
             WebView(
                 url = url.toUri(),
                 onWebViewCreated = { webView ->
-                    webViewInstance = webView
+                    viewModel.updateWebViewInstance(webView)
                 },
                 onPageFinished = { webView ->
-                    canGoBack = webView.canGoBack()
-                    canGoForward = webView.canGoForward()
-                    url = webView.url ?: url
+                    viewModel.onPageFinished(webView)
                 },
                 modifier = Modifier.padding(innerPadding)
             )

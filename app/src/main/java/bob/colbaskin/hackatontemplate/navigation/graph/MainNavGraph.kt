@@ -8,7 +8,7 @@ import bob.colbaskin.hackatontemplate.home.presentation.HomeScreen
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen
 import bob.colbaskin.hackatontemplate.profile.presentation.ProfileScreen
-import bob.colbaskin.hackatontemplate.yandexMap.YandexMapScreen
+import bob.colbaskin.hackatontemplate.yandexMap.presentation.YandexMapScreen
 
 /**
  * @author bybuss

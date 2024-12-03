@@ -13,7 +13,7 @@ import bob.colbaskin.hackatontemplate.home.presentation.HomeScreenDetailed
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.onBoarding.presentation.WelcomeScreen
 import bob.colbaskin.hackatontemplate.profile.presentation.ProfileScreenDetailed
-import bob.colbaskin.hackatontemplate.webViewTest.presentation.WebBrowser
+import bob.colbaskin.hackatontemplate.webView.presentation.WebBrowser
 import com.google.accompanist.pager.ExperimentalPagerApi
 
 /**

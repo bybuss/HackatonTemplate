@@ -1,4 +1,4 @@
-package bob.colbaskin.hackatontemplate
+package bob.colbaskin.hackatontemplate.di
 
 import android.content.Context
 import dagger.Module

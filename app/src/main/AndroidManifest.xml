@@ -32,8 +32,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="pl-coding.com"
-                    android:scheme="https" />
+                <data android:scheme="https"
+                    android:host="menoitami.ru" />
             </intent-filter>
         </activity>
     </application>
