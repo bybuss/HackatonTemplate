@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -19,10 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
-import bob.colbaskin.hackatontemplate.navigation.Screen
-import bob.colbaskin.hackatontemplate.navigation.graph.Graph
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -32,7 +29,7 @@ import com.google.accompanist.pager.rememberPagerState
 @ExperimentalPagerApi
 @Composable
 fun WelcomeScreen(
-    navController: NavHostController,
+    onNextClick: () -> Unit,
     welcomeViewModel: WelcomeViewModel = hiltViewModel()
 ) {
     val pages = listOf(
@@ -59,13 +56,11 @@ fun WelcomeScreen(
         )
 
         if (pagerState.currentPage == pages.size - 1) {
+            Spacer(modifier = Modifier.padding(top = 8.dp))
             Button(
                 onClick = {
                     welcomeViewModel.saveOnBoardingState(completed = true)
-                    navController.popBackStack()
-                    navController.navigate(Graph.MAIN) {
-                        popUpTo(Screen.Welcome.route) { inclusive = true }
-                    }
+                    onNextClick()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,

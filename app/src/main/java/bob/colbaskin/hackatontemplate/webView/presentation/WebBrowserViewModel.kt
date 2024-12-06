@@ -1,6 +1,6 @@
 package bob.colbaskin.hackatontemplate.webView.presentation
 
-import android.net.Uri
+import android.util.Log
 import android.webkit.WebView
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,6 +10,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WebBrowserViewModel @Inject constructor(): ViewModel() {
+
+    private val _redirectCode = MutableStateFlow<Int?>(null)
+    var redirectCode = _redirectCode.asStateFlow()
 
     private var _url = MutableStateFlow("https://www.google.com")
     val url = _url.asStateFlow()
@@ -55,5 +58,10 @@ class WebBrowserViewModel @Inject constructor(): ViewModel() {
 
     fun setUrl(url: String) {
         _url.value = url
+    }
+
+    fun updateRedirectCode(newCode: Int?) {
+        _redirectCode.value = newCode
+        Log.d("rCode", "viewmodel: $newCode")
     }
 }

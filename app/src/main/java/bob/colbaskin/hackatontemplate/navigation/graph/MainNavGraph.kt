@@ -1,9 +1,11 @@
 package bob.colbaskin.hackatontemplate.navigation.graph
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import bob.colbaskin.hackatontemplate.auth.presentation.AuthViewModel
 import bob.colbaskin.hackatontemplate.home.presentation.HomeScreen
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen

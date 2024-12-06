@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.*
 import bob.colbaskin.hackatontemplate.AppScreen
+import bob.colbaskin.hackatontemplate.auth.presentation.AuthViewModel
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen
 import bob.colbaskin.hackatontemplate.onBoarding.presentation.OnBoardViewModel
@@ -32,7 +33,14 @@ fun RootNavGraph() {
         route = Graph.ROOT
     ) {
         composable(route = Screen.Welcome.route) {
-            WelcomeScreen(navController = navController)
+            WelcomeScreen(
+                onNextClick = {
+                    navController.popBackStack()
+                    navController.navigate(Graph.AUTH) {
+                        popUpTo(Screen.Welcome.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         authNavGraph(navController)

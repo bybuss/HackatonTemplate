@@ -8,10 +8,8 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,17 +19,14 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,29 +34,30 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun WebBrowser(
     onExitClick: () -> Unit,
-    titleText: Int,
     viewModel: WebBrowserViewModel = hiltViewModel(),
+    redirectCode: Int? = null
 ) {
     val url by viewModel.url.collectAsState()
     val canGoBack by viewModel.canGoBack.collectAsState()
     val canGoForward by viewModel.canGoForward.collectAsState()
     val isWebViewVisible by viewModel.isWebViewVisible.collectAsState()
 
+    LaunchedEffect(redirectCode) {
+        viewModel.updateRedirectCode(redirectCode)
+    }
+
     Scaffold(
         topBar = {
             BrowserTopBar(
-                url = url,
                 canGoBack = canGoBack,
                 canGoForward = canGoForward,
-                onUrlChange = { viewModel.setUrl(it) },
                 onBack = { viewModel.onBack() },
                 onForward = { viewModel.onForward() },
                 onRefresh = { viewModel.onRefresh() },
                 onExit = {
                     viewModel.onExit()
                     onExitClick()
-                },
-                titleText = titleText,
+                }
             )
         }
     ) { innerPadding ->
@@ -83,15 +79,12 @@ fun WebBrowser(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BrowserTopBar (
-    url: String,
     canGoBack: Boolean,
     canGoForward: Boolean,
-    onUrlChange: (String) -> Unit,
     onBack: () -> Unit,
     onForward: () -> Unit,
     onRefresh: () -> Unit,
-    onExit:() -> Unit,
-    titleText: Int
+    onExit:() -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
@@ -128,23 +121,10 @@ fun BrowserTopBar (
                                 contentDescription = "Закрыть"
                             )
                         }
-                        Text("$titleText")
                     }
                 }
-                Spacer(modifier = Modifier.padding(top = 4.dp))
-                OutlinedTextField(
-                    value = url,
-                    onValueChange = onUrlChange,
-                    modifier = Modifier
-                        .fillMaxWidth(0.97f)
-                        .height(45.dp),
-                    singleLine = true,
-                    placeholder = { Text("Введите URL") },
-                    textStyle = MaterialTheme.typography.bodySmall
-                )
             }
-        },
-        expandedHeight = 115.dp
+        }
     )
 }
 
@@ -201,5 +181,5 @@ fun WebView(
 @Preview
 @Composable
 fun WebViewScreenDetailedPreview() {
-    WebBrowser ({}, 1)
+    WebBrowser ({})
 }

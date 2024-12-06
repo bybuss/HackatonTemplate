@@ -22,14 +22,25 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     ) {
         composable(route = AuthScreen.Login.route) {
             LoginScreen(
-                navController = navController,
-                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) }
+                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) },
+                onSignUpClick = { navController.navigate(AuthScreen.SignUp.route) },
+                onForgotClick = { navController.navigate(AuthScreen.Forgot.route) },
+                onLoginClick = {
+                    navController.navigate(Graph.MAIN) {
+                        popUpTo(AuthScreen.Login.route) { inclusive = true }
+                    }
+                }
             )
         }
         composable(route = AuthScreen.SignUp.route) {
             SignUpScreen(
-                navController = navController,
-                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) }
+                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) },
+                onSignUpClick = {
+                    navController.navigate(Graph.MAIN) {
+                        popUpTo(AuthScreen.Login.route) { inclusive = true }
+                    }
+                },
+                onLoginClick = { navController.navigate(AuthScreen.Login.route) },
             )
         }
         composable(route = AuthScreen.Forgot.route) {
