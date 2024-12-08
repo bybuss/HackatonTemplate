@@ -1,11 +1,14 @@
-package bob.colbaskin.hackatontemplate.webView.presentation
+package bob.colbaskin.hackatontemplate.auth.presentation
 
+import android.annotation.SuppressLint
 import android.net.Uri
+import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
@@ -72,6 +77,14 @@ fun WebBrowser(
                 },
                 modifier = Modifier.padding(innerPadding)
             )
+        }
+        else {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
@@ -128,6 +141,7 @@ fun BrowserTopBar (
     )
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebView(
     url: Uri,
@@ -141,6 +155,8 @@ fun WebView(
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.databaseEnabled = true
+                settings.useWideViewPort = true
+                settings.loadWithOverviewMode = true
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(
@@ -180,6 +196,29 @@ fun WebView(
 
 @Preview
 @Composable
-fun WebViewScreenDetailedPreview() {
+fun WebViewScreenPreview() {
     WebBrowser ({})
+}
+
+@Preview
+@Composable
+fun BrowserTopBarPreview() {
+    BrowserTopBar(
+        canGoBack = true,
+        canGoForward = true,
+        onBack = {},
+        onForward = {},
+        onRefresh = {},
+        onExit = {}
+    )
+}
+
+@Preview
+@Composable
+fun WebViewStructurePreview() {
+    WebView(
+        url = "https://menoitami.ru/pages/reg.html".toUri(),
+        onWebViewCreated = {},
+        onPageFinished = {}
+    )
 }

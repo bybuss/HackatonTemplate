@@ -1,6 +1,5 @@
 package bob.colbaskin.hackatontemplate.di
 
-import android.util.Log
 import bob.colbaskin.hackatontemplate.BuildConfig
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module

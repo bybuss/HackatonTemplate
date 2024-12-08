@@ -55,7 +55,7 @@ android {
 }
 
 dependencies {
-// Compose BOM
+    // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
 
     // AndroidX Core and Activity
@@ -130,4 +130,8 @@ dependencies {
 
     //MapKitSDK
     implementation(libs.maps.mobile)
+
+    //Location
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
 }

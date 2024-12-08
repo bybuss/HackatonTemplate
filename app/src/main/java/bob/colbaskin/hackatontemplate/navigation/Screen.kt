@@ -22,13 +22,13 @@ sealed class Screen (
 }
 
 sealed class AuthScreen(val route: String) {
-    object Login : AuthScreen(route = "login")
-    object SignUp : AuthScreen(route = "sign_up")
-    object Forgot : AuthScreen(route = "forgot")
+//    object Login : AuthScreen(route = "login")
+//    object SignUp : AuthScreen(route = "sign_up")
+//    object Forgot : AuthScreen(route = "forgot")
+    object WebBrowser: AuthScreen("web_browser")
 }
 
 sealed class DetailsScreen(val route: String) {
     object Home: DetailsScreen("home_details")
     object Profile: DetailsScreen("profile_details")
-    object WebBrowser: DetailsScreen("web_browser")
 }

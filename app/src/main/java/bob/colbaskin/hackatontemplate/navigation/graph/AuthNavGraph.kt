@@ -1,14 +1,15 @@
 package bob.colbaskin.hackatontemplate.navigation.graph
 
+import android.content.Intent
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
-import bob.colbaskin.hackatontemplate.auth.presentation.ForgotScreen
-import bob.colbaskin.hackatontemplate.auth.presentation.LoginScreen
-import bob.colbaskin.hackatontemplate.auth.presentation.SignUpScreen
 import bob.colbaskin.hackatontemplate.navigation.AuthScreen
-import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
+import bob.colbaskin.hackatontemplate.auth.presentation.WebBrowser
 
 
 /**
@@ -17,36 +18,31 @@ import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
-        startDestination = AuthScreen.Login.route,
+        startDestination = AuthScreen.WebBrowser.route,
         route = Graph.AUTH
     ) {
-        composable(route = AuthScreen.Login.route) {
-            LoginScreen(
-                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) },
-                onSignUpClick = { navController.navigate(AuthScreen.SignUp.route) },
-                onForgotClick = { navController.navigate(AuthScreen.Forgot.route) },
-                onLoginClick = {
-                    navController.navigate(Graph.MAIN) {
-                        popUpTo(AuthScreen.Login.route) { inclusive = true }
-                    }
+
+        composable(
+            route = AuthScreen.WebBrowser.route,
+            deepLinks = listOf (
+                navDeepLink {
+                    uriPattern = "https://menoitami.ru/auth/redirect/{code}"
+                    action = Intent.ACTION_VIEW
+                }
+            ),
+            arguments = listOf (
+                navArgument("code") {
+                    type = NavType.IntType
+                    defaultValue = -1
                 }
             )
-        }
-        composable(route = AuthScreen.SignUp.route) {
-            SignUpScreen(
-                onWebViewClick = { navController.navigate(DetailsScreen.WebBrowser.route) },
-                onSignUpClick = {
-                    navController.navigate(Graph.MAIN) {
-                        popUpTo(AuthScreen.Login.route) { inclusive = true }
-                    }
+        ) { backStackEntry ->
+            WebBrowser(
+                onExitClick = {
+                    navController.navigateUp()
                 },
-                onLoginClick = { navController.navigate(AuthScreen.Login.route) },
+                redirectCode = backStackEntry.arguments?.getInt("code")
             )
         }
-        composable(route = AuthScreen.Forgot.route) {
-            ForgotScreen(navController = navController)
-        }
     }
-
-    detailsNavGraph(navController)
 }

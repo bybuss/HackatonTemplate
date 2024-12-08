@@ -2,12 +2,15 @@ package bob.colbaskin.hackatontemplate.auth.presentation
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import bob.colbaskin.hackatontemplate.auth.domain.local.TokenDataStoreRepository
+import androidx.lifecycle.viewModelScope
+import bob.colbaskin.hackatontemplate.auth.domain.local.AuthDataStoreRepository
 import bob.colbaskin.hackatontemplate.auth.domain.network.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -23,31 +26,22 @@ sealed class AuthState {
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenDataStoreRepository: TokenDataStoreRepository
+    private val authDataStoreRepository: AuthDataStoreRepository
 ) : ViewModel() {
-
-    private val _email = MutableStateFlow("")
-    val email = _email.asStateFlow()
-
-    private val _password = MutableStateFlow("")
-    val password = _password.asStateFlow()
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     init {
-        checkAuthState()
-    }
-
-    fun setEmail(email: String) {
-        _email.value = email
-    }
-
-    fun setPassword(password: String) {
-        _password.value = password
+        viewModelScope.launch {
+            checkAuthState()
+//            createClientIfNotExists()
+//            authDataStoreRepository.clearClient()
+        }
     }
 
     private fun checkAuthState() {
+        _authState.value = AuthState.Loading
         if (authRepository.isLoggedIn()) {
             _authState.value = AuthState.Authenticated
         } else {
@@ -55,22 +49,8 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun login(email: String, password: String) {
-        Log.d("AuthViewModel", "login")
-//        runBlocking {
-//            tokenDataStoreRepository.saveToken("token")
-//        }
-    }
-
-
-    fun signUp(
-        email: String,
-        password: String
-    ) {
-        Log.d("AuthViewModel", "signup")
-    }
-
     fun signOut() {
-        Log.d("AuthViewModel", "signout")
+        _authState.value = AuthState.Loading
+        Log.d("Auth", "signout")
     }
 }
