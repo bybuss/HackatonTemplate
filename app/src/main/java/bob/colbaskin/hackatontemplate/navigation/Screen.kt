@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.WebAsset
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -22,10 +21,7 @@ sealed class Screen (
 }
 
 sealed class AuthScreen(val route: String) {
-//    object Login : AuthScreen(route = "login")
-//    object SignUp : AuthScreen(route = "sign_up")
-//    object Forgot : AuthScreen(route = "forgot")
-    object WebBrowser: AuthScreen("web_browser")
+    object AuthenticationScreen: AuthScreen("web_browser")
 }
 
 sealed class DetailsScreen(val route: String) {

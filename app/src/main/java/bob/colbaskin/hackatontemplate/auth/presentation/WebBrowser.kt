@@ -8,7 +8,6 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,9 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,26 +26,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun WebBrowser(
-    onExitClick: () -> Unit,
-    viewModel: WebBrowserViewModel = hiltViewModel(),
-    redirectCode: Int? = null
+    webBrowserViewModel: WebBrowserViewModel,
+    authViewModel: AuthViewModel
 ) {
-    val url by viewModel.url.collectAsState()
-    val canGoBack by viewModel.canGoBack.collectAsState()
-    val canGoForward by viewModel.canGoForward.collectAsState()
-    val isWebViewVisible by viewModel.isWebViewVisible.collectAsState()
+    val url by authViewModel.url.collectAsState()
+    val canGoBack by webBrowserViewModel.canGoBack.collectAsState()
+    val canGoForward by webBrowserViewModel.canGoForward.collectAsState()
 
-    LaunchedEffect(redirectCode) {
-        viewModel.updateRedirectCode(redirectCode)
+    LaunchedEffect(Unit) {
+        webBrowserViewModel.updateUrl(url)
     }
 
     Scaffold(
@@ -56,36 +50,26 @@ fun WebBrowser(
             BrowserTopBar(
                 canGoBack = canGoBack,
                 canGoForward = canGoForward,
-                onBack = { viewModel.onBack() },
-                onForward = { viewModel.onForward() },
-                onRefresh = { viewModel.onRefresh() },
-                onExit = {
-                    viewModel.onExit()
-                    onExitClick()
-                }
+                onBack = { webBrowserViewModel.onBack() },
+                onForward = { webBrowserViewModel.onForward() },
+                onRefresh = { webBrowserViewModel.onRefresh() }
             )
         }
     ) { innerPadding ->
-        if (isWebViewVisible) {
-            WebView(
-                url = url.toUri(),
-                onWebViewCreated = { webView ->
-                    viewModel.updateWebViewInstance(webView)
-                },
-                onPageFinished = { webView ->
-                    viewModel.onPageFinished(webView)
-                },
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
-        else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
+        WebView(
+            url = url.toUri(),
+            onWebViewCreated = { webView ->
+                webBrowserViewModel.updateWebViewInstance(webView)
+            },
+            onPageFinished = { webView ->
+                webBrowserViewModel.onPageFinished(webView)
+            },
+            onAuthCodeReceived = { authCode ->
+                authViewModel.codeToToken(authCode)
+                Log.d("Auth", "Received auth_code from webView: $authCode")
+            },
+            modifier = Modifier.padding(innerPadding)
+        )
     }
 }
 
@@ -96,15 +80,14 @@ fun BrowserTopBar (
     canGoForward: Boolean,
     onBack: () -> Unit,
     onForward: () -> Unit,
-    onRefresh: () -> Unit,
-    onExit:() -> Unit
+    onRefresh: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier.fillMaxWidth(),
         title = {
             Column {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
@@ -121,19 +104,11 @@ fun BrowserTopBar (
                             )
                         }
                     }
-                    Row {
-                        IconButton(onClick = onRefresh) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Обновить"
-                            )
-                        }
-                        IconButton(onClick = { onExit() }) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Закрыть"
-                            )
-                        }
+                    IconButton(onClick = onRefresh) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Обновить"
+                        )
                     }
                 }
             }
@@ -147,6 +122,7 @@ fun WebView(
     url: Uri,
     onWebViewCreated: (WebView) -> Unit,
     onPageFinished: (WebView) -> Unit,
+    onAuthCodeReceived: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AndroidView (
@@ -163,7 +139,22 @@ fun WebView(
                         view: WebView?,
                         request: WebResourceRequest?
                     ): Boolean {
-                        return false
+                        val mobileAppUrl = request?.url.toString()
+                        Log.d("WebView", "Current WebView url: $mobileAppUrl")
+                        if (mobileAppUrl.startsWith("https://menoitami.ru/pages/hack_app://")) {
+                            val uri = Uri.parse(mobileAppUrl)
+                            val authCode = uri.getQueryParameter("auth_code")
+
+                            authCode?.let { code ->
+                                val cleanedCode =
+                                    if (authCode.endsWith("/")) code.dropLast(1) else code
+
+                                Log.d("WebView", "Cleaned Auth code: $cleanedCode")
+                                onAuthCodeReceived(cleanedCode)
+                            }
+                            return true
+                        }
+                        return super.shouldOverrideUrlLoading(view, request)
                     }
 
                     override fun onPageFinished(view: WebView?, url: String?) {
@@ -194,11 +185,6 @@ fun WebView(
     )
 }
 
-@Preview
-@Composable
-fun WebViewScreenPreview() {
-    WebBrowser ({})
-}
 
 @Preview
 @Composable
@@ -208,8 +194,7 @@ fun BrowserTopBarPreview() {
         canGoForward = true,
         onBack = {},
         onForward = {},
-        onRefresh = {},
-        onExit = {}
+        onRefresh = {}
     )
 }
 
@@ -219,6 +204,7 @@ fun WebViewStructurePreview() {
     WebView(
         url = "https://menoitami.ru/pages/reg.html".toUri(),
         onWebViewCreated = {},
+        onAuthCodeReceived = {},
         onPageFinished = {}
     )
 }

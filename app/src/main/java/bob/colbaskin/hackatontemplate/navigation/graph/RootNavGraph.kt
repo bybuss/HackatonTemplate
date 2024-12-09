@@ -1,17 +1,10 @@
 package bob.colbaskin.hackatontemplate.navigation.graph
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.*
 import bob.colbaskin.hackatontemplate.AppScreen
-import bob.colbaskin.hackatontemplate.auth.presentation.AuthViewModel
-import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen
 import bob.colbaskin.hackatontemplate.onBoarding.presentation.OnBoardViewModel
 import bob.colbaskin.hackatontemplate.onBoarding.presentation.WelcomeScreen

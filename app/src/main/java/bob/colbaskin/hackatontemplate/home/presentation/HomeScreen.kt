@@ -30,7 +30,8 @@ import com.google.android.gms.location.LocationServices
  */
 @Composable
 fun HomeScreen(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    //authCode: Int
 ) {
 
     val viewModel: YandexMapViewModel = hiltViewModel()

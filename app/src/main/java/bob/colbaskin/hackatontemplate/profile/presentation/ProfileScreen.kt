@@ -16,20 +16,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Output
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,17 +35,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 /**
  * @author bybuss
  */
-enum class ProfileTab { Activity, Inventory, Achievements }
-
 @Composable
 fun ProfileScreen(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onDetailedClick: () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(ProfileTab.Activity) }
+    val viewModel: ProfileViewModel = hiltViewModel()
+    val selectedTab by viewModel.selectedTab.collectAsState()
 
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Box(
             modifier = Modifier
@@ -55,7 +51,10 @@ fun ProfileScreen(
                 .fillMaxHeight(0.35f),
             contentAlignment = Alignment.Center
         ) {
-            ProfileHeader(onClick)
+            ProfileHeader(
+                onDetailedClick = onDetailedClick,
+                onAccountExitClick = { viewModel.accountExit() }
+            )
         }
 
         Box(
@@ -72,23 +71,17 @@ fun ProfileScreen(
                     ProfileTabButton(
                         "Активность",
                         selectedTab == ProfileTab.Activity
-                    ) {
-                        selectedTab = ProfileTab.Activity
-                    }
+                    ) { viewModel.updateSelectedTab(ProfileTab.Activity) }
 
                     ProfileTabButton(
                         "Инвентарь",
                         selectedTab == ProfileTab.Inventory
-                    ) {
-                        selectedTab = ProfileTab.Inventory
-                    }
+                    ) { viewModel.updateSelectedTab(ProfileTab.Inventory) }
 
                     ProfileTabButton(
                         "Достижения",
                         selectedTab == ProfileTab.Achievements
-                    ) {
-                        selectedTab = ProfileTab.Achievements
-                    }
+                    ) { viewModel.updateSelectedTab(ProfileTab.Achievements) }
                 }
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
@@ -109,36 +102,56 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileHeader(onClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+fun ProfileHeader(
+    onDetailedClick: () -> Unit,
+    onAccountExitClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            imageVector = Icons.Filled.Person,
-            contentDescription = "Avatar",
+        IconButton(
+            onClick = onAccountExitClick,
             modifier = Modifier
-                .size(100.dp)
-                .background(
-                    color = Color.Gray,
-                    shape = RoundedCornerShape(50.dp)
-                )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Иванчик Зольчик",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable { onClick() }
-        )
-        Text(
-            text = "г. Ростов-на-Дону.",
-            color = Color.Gray,
-            fontSize = 14.sp,
-            modifier = Modifier.clickable { onClick() }
-        )
+                .align(Alignment.TopEnd)
+                .padding(horizontal = 8.dp, vertical = 32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Output,
+                contentDescription = "Выход",
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Avatar",
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(50.dp)
+                    )
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Иванчик Зольчик",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { onDetailedClick() }
+            )
+            Text(
+                text = "г. Ростов-на-Дону.",
+                color = Color.Gray,
+                fontSize = 14.sp,
+                modifier = Modifier.clickable { onDetailedClick() }
+            )
+        }
     }
 }
 
@@ -192,4 +205,50 @@ fun AchievementsContent() {
             textAlign = TextAlign.Center
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen({})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileHeaderPreview() {
+    ProfileHeader({}, {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ActivityTabButtonPreview() {
+    ProfileTabButton("Активность", true, {})
+}
+@Preview(showBackground = true)
+@Composable
+fun InventoryTabButtonPreview() {
+    ProfileTabButton("Инвентарь", true, {})
+}
+@Preview(showBackground = true)
+@Composable
+fun AchievementsTabButtonPreview() {
+    ProfileTabButton("Достижения", true, {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ActivityContentPreview() {
+    ActivityContent()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun InventoryContentPreview() {
+    InventoryContent()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AchievementsContentPreview() {
+    AchievementsContent()
 }

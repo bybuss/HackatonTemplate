@@ -1,7 +1,9 @@
 package bob.colbaskin.hackatontemplate
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,12 +12,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import bob.colbaskin.hackatontemplate.auth.presentation.WebBrowserViewModel
 import bob.colbaskin.hackatontemplate.navigation.graph.RootNavGraph
 import bob.colbaskin.hackatontemplate.onBoarding.presentation.OnBoardViewModel
 import bob.colbaskin.hackatontemplate.ui.theme.HackatonTemplateTheme
 import com.yandex.mapkit.MapKitFactory
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
