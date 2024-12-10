@@ -29,6 +29,7 @@ object RemoteModule {
     @Singleton
     fun provideOkHttpClient(
         //TODO: Добавить датастор с токеном для передачи в хедер
+        @Named("deviceFingerprint") deviceFingerprint: String
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(Interceptor { chain ->
@@ -36,6 +37,7 @@ object RemoteModule {
                 // FIXME: Log.d("AuthViewModel", "token used in provideOkHttpClient: $token")
                 val request = chain.request().newBuilder()
                     // FIXME: .addHeader("Authorization", token)
+                    .addHeader("fingerprint", deviceFingerprint)
                     .build()
                 chain.proceed(request)
             })
