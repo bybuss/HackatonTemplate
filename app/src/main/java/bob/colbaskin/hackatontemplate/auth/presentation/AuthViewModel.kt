@@ -113,7 +113,7 @@ class AuthViewModel @Inject constructor(
     fun codeToToken(code: String) {
         viewModelScope.launch {
             try {
-                val token = authRepository.codeToToken(
+                authRepository.codeToToken(
                     CodeToTokenDTO(
                         authCode = code,
                         codeChallenger = codeChallenger ?: "null",
@@ -121,9 +121,7 @@ class AuthViewModel @Inject constructor(
                         scopes = listOf("string")
                     )
                 )
-                authDataStoreRepository.saveToken(token)
                 checkAuthState()
-                Log.d("Auth", "Try change code to token: $token")
             } catch (e: Exception) {
                 Log.e("Auth","Change code to token error: $e")
                 Log.e("Auth", "CodeToTokenDTO: ${

@@ -1,6 +1,5 @@
 package bob.colbaskin.hackatontemplate.auth.data
 
-import android.util.Log
 import bob.colbaskin.hackatontemplate.auth.data.models.CodeToTokenDTO
 import bob.colbaskin.hackatontemplate.auth.domain.local.AuthDataStoreRepository
 import bob.colbaskin.hackatontemplate.auth.domain.network.AuthApiService
@@ -21,7 +20,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun codeToToken(request: CodeToTokenDTO): String {
-        return authApiService.codeToToken(request)
+    override suspend fun codeToToken(request: CodeToTokenDTO) {
+        val tokens = authApiService.codeToToken(request)
+
+        authDataStoreRepository.saveToken(tokens.accessToken)
+        authDataStoreRepository.saveRefreshToken(tokens.refreshToken)
     }
 }

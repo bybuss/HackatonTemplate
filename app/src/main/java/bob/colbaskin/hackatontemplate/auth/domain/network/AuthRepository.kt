@@ -6,5 +6,5 @@ interface AuthRepository {
 
     fun isLoggedIn(): Boolean
 
-    suspend fun codeToToken(request: CodeToTokenDTO): String
+    suspend fun codeToToken(request: CodeToTokenDTO)
 }

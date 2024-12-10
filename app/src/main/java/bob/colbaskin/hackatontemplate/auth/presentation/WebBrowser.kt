@@ -146,12 +146,13 @@ fun WebView(
                         if (mobileAppUrl.startsWith("https://menoitami.ru/pages/hack_app://")) {
                             val uri = Uri.parse(mobileAppUrl)
                             val authCode = uri.getQueryParameter("auth_code")
+                            Log.d("WebView", "Detected redirect url. Auth code: $authCode, uri: $uri")
 
                             authCode?.let { code ->
                                 val cleanedCode =
                                     if (authCode.endsWith("/")) code.dropLast(1) else code
-
                                 Log.d("WebView", "Cleaned Auth code: $cleanedCode")
+
                                 onAuthCodeReceived(cleanedCode)
                             }
                             return true

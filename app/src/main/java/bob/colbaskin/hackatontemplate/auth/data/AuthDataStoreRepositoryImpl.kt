@@ -1,6 +1,7 @@
 package bob.colbaskin.hackatontemplate.auth.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
@@ -22,6 +23,7 @@ class AuthDataStoreRepositoryImpl @Inject constructor(
 
     private object PreferencesKey {
         val token = stringPreferencesKey(name = "token")
+        val refreshToken = stringPreferencesKey(name = "refreshToken")
         val codeVerifier = stringPreferencesKey(name = "codeVerifier")
     }
     private val dataStore = context.tokenDataStore
@@ -29,6 +31,7 @@ class AuthDataStoreRepositoryImpl @Inject constructor(
     override suspend fun saveToken(token: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.token] = token
+            Log.d("Auth", "token saved: $token")
         }
     }
 
@@ -43,19 +46,45 @@ class AuthDataStoreRepositoryImpl @Inject constructor(
             }
             .map { preferences ->
                 val token = preferences[PreferencesKey.token]
+                Log.d("Auth", "Get token from datastore: $token")
                 token
+            }
+    }
+
+    override suspend fun saveRefreshToken(refreshToken: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKey.refreshToken] = refreshToken
+            Log.d("Auth", "refresh token saved: $refreshToken")
+        }
+    }
+
+    override fun getRefreshToken(): Flow<String?> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                val refreshToken = preferences[PreferencesKey.refreshToken]
+                Log.d("Auth", "Get refresh token from datastore: $refreshToken")
+                refreshToken
             }
     }
 
     override suspend fun clearToken() {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.token] = ""
+            Log.d("Auth", "Cleared token")
         }
     }
 
     override suspend fun saveCodeVerifier(codeVerifier: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.codeVerifier] = codeVerifier
+            Log.d("Auth", "Saved code verifier: $codeVerifier")
         }
     }
 
@@ -76,6 +105,7 @@ class AuthDataStoreRepositoryImpl @Inject constructor(
     override suspend fun clearCodeVerifier() {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.codeVerifier] = ""
+            Log.d("Auth", "Cleared code verifier")
         }
     }
 }
