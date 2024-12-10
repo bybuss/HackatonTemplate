@@ -35,26 +35,30 @@ class AuthViewModel @Inject constructor(
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
     private var codeVerifier: String? = null
+    private var codeChallenger: String? = null
     private val redirectUrl = "hack_app://return_app/?auth_code={auth_code}"
     private val codeChallengeMethod = "S256"
     private val clientId = "10"
+    private val roleId = "2"
 
-    private val _url = MutableStateFlow(
-        "${BuildConfig.BASE_API_URL}/pages/login.html?" +
-                "code_verifier=$codeVerifier&" +
-                "code_challenge_method=$codeChallengeMethod&" +
-                "client_id=$clientId&" +
-                "redirect_url=$redirectUrl"
-    )
-    val url = _url.asStateFlow()
+    private val _url = MutableStateFlow<String?>(null)
+    val url: StateFlow<String?> = _url.asStateFlow()
 
     init {
         viewModelScope.launch {
             codeVerifier = getOrGenerateCodeVerifier()
-            //TODO: ВЕРНУТЬ ПОТОМ checkAuthState()
-            //checkAuthState()
+            codeChallenger = codeVerifierToPKCE(codeVerifier!!)
+            _url.value = "${BuildConfig.BASE_API_URL}/pages/login.html?" +
+                    "code_verifier=$codeVerifier&" +
+                    "code_challenge_method=$codeChallengeMethod&" +
+                    "client_id=$clientId&" +
+                    "redirect_url=$redirectUrl&" +
+                    "role_id=$roleId"
+            Log.d("Auth", "Initial url: ${_url.value}")
+            checkAuthState()
         }
         Log.d("Auth", "Current authState: ${_authState.value}")
+        Log.d("Auth", "Current CodeVerifier: $codeVerifier")
     }
 
     private suspend fun getOrGenerateCodeVerifier(): String {
@@ -72,45 +76,60 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun generateCodeVerifier(): String {
+        val allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
         val randomBytes = ByteArray(32)
         SecureRandom().nextBytes(randomBytes)
-        val sha256Hash = MessageDigest.getInstance("SHA-256").digest(randomBytes)
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(sha256Hash)
+
+        val codeVerifier = StringBuilder()
+        randomBytes.forEach { byte ->
+            val charIndex = byte.toInt() and 0xFF
+            codeVerifier.append(allowedCharacters[charIndex % allowedCharacters.length])
+        }
+
+        val verifier = codeVerifier.toString()
+        return if (verifier.length < 43) {
+            verifier.padEnd(43, '_')
+        } else {
+            verifier
+        }
+    }
+
+    private fun codeVerifierToPKCE(codeVerifier: String): String {
+        val sha256Hash = MessageDigest.getInstance("SHA-256").digest(codeVerifier.toByteArray())
+        val challengerCode = Base64.getUrlEncoder().withoutPadding().encodeToString(sha256Hash)
+        Log.d("Auth", "Challenger code: $challengerCode from codeVerifier: $codeVerifier" )
+        return challengerCode
     }
 
     private fun checkAuthState() {
-        _authState.value = AuthState.Loading
-        //TODO: ВЕРНУТ�� ПОТОМ checkAuthState()
-//        if (authRepository.isLoggedIn()) {
-//            _authState.value = AuthState.Authenticated
-//        } else {
-//            _authState.value = AuthState.Unauthenticated
-//        }
-        _authState.value = AuthState.Authenticated
+        if (authRepository.isLoggedIn()) {
+            _authState.value = AuthState.Authenticated
+        } else {
+            _authState.value = AuthState.Unauthenticated
+        }
+        Log.d("Auth", "Checked authState: ${_authState.value}")
     }
 
     fun codeToToken(code: String) {
-        checkAuthState()
         viewModelScope.launch {
             try {
                 val token = authRepository.codeToToken(
                     CodeToTokenDTO(
                         authCode = code,
-                        codeChallenger = codeVerifier!!,
+                        codeChallenger = codeChallenger ?: "null",
                         redirectUrl = redirectUrl,
                         scopes = listOf("string")
                     )
                 )
                 authDataStoreRepository.saveToken(token)
-                // FIXME: ПРОВЕРЯТЬ ПОТОМ ЧЕРЕЗ checkAuthState()
-                //checkAuthState()
+                checkAuthState()
                 Log.d("Auth", "Try change code to token: $token")
             } catch (e: Exception) {
                 Log.e("Auth","Change code to token error: $e")
                 Log.e("Auth", "CodeToTokenDTO: ${
                     CodeToTokenDTO(
                         authCode = code,
-                        codeChallenger = codeVerifier ?: "null",
+                        codeChallenger = codeChallenger ?: "null",
                         redirectUrl = redirectUrl,
                         scopes = listOf("string")
                     )

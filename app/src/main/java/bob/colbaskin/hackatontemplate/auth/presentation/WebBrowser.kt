@@ -41,8 +41,8 @@ fun WebBrowser(
     val canGoBack by webBrowserViewModel.canGoBack.collectAsState()
     val canGoForward by webBrowserViewModel.canGoForward.collectAsState()
 
-    LaunchedEffect(Unit) {
-        webBrowserViewModel.updateUrl(url)
+    LaunchedEffect(url) {
+        url?.let { webBrowserViewModel.updateUrl(it) }
     }
 
     Scaffold(
@@ -56,20 +56,22 @@ fun WebBrowser(
             )
         }
     ) { innerPadding ->
-        WebView(
-            url = url.toUri(),
-            onWebViewCreated = { webView ->
-                webBrowserViewModel.updateWebViewInstance(webView)
-            },
-            onPageFinished = { webView ->
-                webBrowserViewModel.onPageFinished(webView)
-            },
-            onAuthCodeReceived = { authCode ->
-                authViewModel.codeToToken(authCode)
-                Log.d("Auth", "Received auth_code from webView: $authCode")
-            },
-            modifier = Modifier.padding(innerPadding)
-        )
+        url?.toUri()?.let {
+            WebView(
+                url = it,
+                onWebViewCreated = { webView ->
+                    webBrowserViewModel.updateWebViewInstance(webView)
+                },
+                onPageFinished = { webView ->
+                    webBrowserViewModel.onPageFinished(webView)
+                },
+                onAuthCodeReceived = { authCode ->
+                    authViewModel.codeToToken(authCode)
+                    Log.d("Auth", "Received auth_code from webView: $authCode")
+                },
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }
 
@@ -184,7 +186,6 @@ fun WebView(
         modifier = modifier.fillMaxSize()
     )
 }
-
 
 @Preview
 @Composable

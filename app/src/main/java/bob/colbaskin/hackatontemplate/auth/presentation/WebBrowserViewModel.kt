@@ -1,5 +1,6 @@
 package bob.colbaskin.hackatontemplate.auth.presentation
 
+import android.util.Log
 import android.webkit.WebView
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +40,7 @@ class WebBrowserViewModel @Inject constructor(): ViewModel() {
 
     fun updateUrl(url: String) {
         _url.value = url
+        Log.d("WebView", "Url updated in WebBrowserViewModel: ${_url.value}")
     }
 
     fun onPageFinished(webView: WebView) {
